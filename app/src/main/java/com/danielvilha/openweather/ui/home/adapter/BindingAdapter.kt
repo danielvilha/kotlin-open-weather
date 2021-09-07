@@ -3,7 +3,6 @@ package com.danielvilha.openweather.ui.home.adapter
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.danielvilha.openweather.network.WeatherItem
-import java.text.SimpleDateFormat
 
 /**
  * Created by danielvilha on 07/09/21
@@ -18,8 +17,3 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<WeatherItem>?) {
     val adapter = recyclerView.adapter as OpenWeatherAdapter
     adapter.submitList(data)
 }
-
-//@BindingAdapter("dateFormat")
-//fun bindDateFormat(date: String?) {
-//    SimpleDateFormat("dd/MM/yyyy hh:mm").parse(date)
-//}
