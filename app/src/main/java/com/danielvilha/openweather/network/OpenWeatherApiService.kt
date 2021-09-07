@@ -9,6 +9,6 @@ import retrofit2.http.GET
  */
 interface OpenWeatherApiService {
 
-    @GET("forecast?q=Dublin,IE&APPID=1af9031b36210770055780c9e6c073f7")
+    @GET("forecast?q=Dublin,IE&APPID=1af9031b36210770055780c9e6c073f7&cnt=5")
     fun getWeather(): Call<OpenWeatherProperty>
 }
