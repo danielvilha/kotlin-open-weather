@@ -1,14 +1,35 @@
 # Open Weather
-This app is displaying Dublin 5-day weather forecast.
-https://openweathermap.org/forecast5 - This site was used to search the weather information.
+OpenWeather App is a weather forecast application that uses the OpenWeatherMap API to provide real-time weather information. This app allows users to track the current weather conditions, hourly forecast, and daily forecast for any location in the world.
+
+## Resources
+
+- View the current temperature, wind chill, humidity, wind speed and other important weather information.
+- Check the hourly weather forecast to plan your day accurately.
+- Check the 7-day forecast to prepare for the week.
+- Customize the temperature unit (Celsius or Fahrenheit) according to your preferences.
+- Get a clear view of weather conditions with representative icon images.
+
+## How to use
+
+To get started with the OpenWeather App, follow these simple steps:
+
+1. Open the app and grant the necessary location permissions.
+2. Enter the city name or let the app use your current location.
+3. View real-time weather information and plan your day with confidence.
+
+## About the OpenWeatherMap API
+
+The OpenWeather App uses the OpenWeatherMap API, a trusted source of global weather data. The API offers a wide range of weather information, including current conditions, hourly and daily forecasts, radar maps, and more.
+
+For more information about the OpenWeatherMap API and your usage options, visit [openweathermap.org](https://openweathermap.org/).
 
 ### Screenshots
-Image 01 | Image 02 | Image 03 | Image 04
---- | --- | --- | ---
-![Image 01](/images/Screenshot_01.png) | ![Image 02](/images/Screenshot_01.png) | ![Image 03](/images/Screenshot_01.png) | ![Image 04](/images/Screenshot_01.png)
+| Image 01                                | Image 02                                | Image 03                                | Image 04                                |
+|-----------------------------------------|-----------------------------------------|-----------------------------------------|-----------------------------------------|
+| ![Image 01](/images/Screenshot_101.png) | ![Image 02](/images/Screenshot_102.png) | ![Image 03](/images/Screenshot_103.png) | ![Image 04](/images/Screenshot_104.png) |
 
 ## Licence
-Copyright 2021 Daniel Freitas Vilha
+Copyright 2024 Daniel Vilha
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
