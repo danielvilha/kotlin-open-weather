@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 /**
  * Created by Daniel Ferreira de Lima Vilha 30/01/2024.
  */
-@Deprecated("Deprecated in Java")
 class LocationHelper(private val activity: Activity) {
 
     private val locationManager: LocationManager by lazy {
@@ -33,24 +32,25 @@ class LocationHelper(private val activity: Activity) {
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_LOCATION
             )
-            return
-        }
+        } else {
 
-        val locationListener = object : LocationListener {
-            override fun onLocationChanged(location: Location) {
-                callback(location)
-                locationManager.removeUpdates(this)
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    callback(location)
+                    locationManager.removeUpdates(this)
+                }
+
+                @Deprecated("Deprecated in Java")
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
             }
 
-            @Deprecated("Deprecated in Java")
-            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                100,
+                5F,
+                locationListener
+            )
         }
-
-        locationManager.requestSingleUpdate(
-            LocationManager.GPS_PROVIDER,
-            locationListener,
-            null
-        )
     }
 
     companion object {

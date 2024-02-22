@@ -26,7 +26,7 @@ For more information about the OpenWeatherMap API and your usage options, visit 
 ### Screenshots
 | Image 01                                | Image 02                                | Image 03                                | Image 04                                |
 |-----------------------------------------|-----------------------------------------|-----------------------------------------|-----------------------------------------|
-| ![Image 01](/images/Screenshot_101.png) | ![Image 02](/images/Screenshot_102.png) | ![Image 03](/images/Screenshot_103.png) | ![Image 04](/images/Screenshot_104.png) |
+| ![Image 01](/images/Screenshot_101.png) | ![Image 02](/images/Screenshot_102.png) | ![Image 03](/images/Screenshot_104.png) | ![Image 04](/images/Screenshot_105.png) |
 
 ## Licence
 Copyright 2024 Daniel Vilha

@@ -7,4 +7,5 @@
     <string name="humidity">Humidity</string>
     <string name="chance">Chance</string>
     <string name="weather_image_link">https://openweathermap.org/img/wn/%s@4x.png</string>
+    <string name="about_open_weather">OpenWeather App is a weather forecast app that uses the OpenWeatherMap API to provide real-time weather information. This app allows users to track the current weather conditions, hourly forecast, and daily forecast for any location in the world.</string>
 </resources>

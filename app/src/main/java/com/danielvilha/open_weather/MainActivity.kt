@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.core.app.ActivityCompat
@@ -20,47 +21,82 @@ import com.danielvilha.open_weather.presentation.splashscreen.SplashScreen
 import com.danielvilha.open_weather.presentation.weather.WeatherScreen
 import com.danielvilha.open_weather.presentation.weather.WeatherUiState
 import com.danielvilha.open_weather.theme.OpenWeatherTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val locationHelper = LocationHelper(this@MainActivity)
+    private var navController: NavHostController? = null
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            lifecycleScope.launch {
+                locationHelper.requestLocationUpdates { location ->
+                    if (location != null) {
+                        locationReceived = true
+                        viewModel.location.value = location
+                        viewModel.trackSplashScreenStarted()
+                        navController?.let { startWeatherScreen(it) }
+                    }
+                }
+            }
+        } else {
+            navController?.let { startPermissionScreen(it) }
+        }
+    }
+
+    private var locationReceived = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
+            navController = rememberNavController()
             val valid = viewModel.valid.collectAsState()
-            val locationHelper = LocationHelper(this@MainActivity)
+            val hasLocation = hasLocationPermission()
 
             OpenWeatherTheme {
                 NavHost(
-                    navController = navController,
+                    navController = navController!!,
                     startDestination = "SplashScreen",
                 ) {
                     composable(route = "SplashScreen") {
                         SplashScreen(
                             valid = valid,
                             onStart = {
-                                lifecycleScope.launch {
-                                    locationHelper.requestLocationUpdates {
-                                        viewModel.location.value = it
-                                        viewModel.trackSplashScreenStarted()
-                                        if (hasLocationPermission()) {
-                                            startWeatherScreen(navController)
-                                        } else {
-                                            requestLocationPermission()
-                                            startPermissionScreen(navController)
+                                if (hasLocation) {
+                                    lifecycleScope.launch {
+                                        locationHelper.requestLocationUpdates {
+                                            if (it != null) {
+                                                locationReceived = true
+                                                viewModel.location.value = it
+                                                viewModel.trackSplashScreenStarted()
+                                                startWeatherScreen(navController!!)
+                                            }
                                         }
                                     }
+                                } else {
+                                    requestLocationPermission()
                                 }
                             },
                             onSplashEndedValid = {
-                                startWeatherScreen(navController)
+                            },
+                            onSplashEndedInvalid = {
+                                startPermissionScreen(navController!!)
                             }
-                        ) { }
+                        )
                     }
                     composable(route = "WeatherScreen") {
+                        if (viewModel.openWeather.value == null) {
+                            runBlocking {
+                                viewModel.trackSplashScreenStarted()
+                                delay(1000L)
+                            }
+                        }
                         WeatherScreen(state = WeatherUiState(
                             status = viewModel.status.value ?: WeatherStatus.LOADING,
                             throwable = viewModel.throwable.value,
@@ -69,8 +105,10 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(route = "PermissionScreen") {
                         PermissionScreen(
+                            isPermissionGranted = hasLocation,
                             onPermissionGranted = {
-                                startWeatherScreen(navController)
+                                if (hasLocationPermission())
+                                    startWeatherScreen(navController!!)
                             }
                         )
                     }
@@ -87,20 +125,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            PERMISSION_REQUEST_CODE
-        )
+        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     private fun startWeatherScreen(navController: NavHostController) {
-        if (hasLocationPermission()) {
-            navController.navigate("WeatherScreen") {
-                popUpTo("SplashScreen") { inclusive = true }
-            }
-        } else {
-            requestLocationPermission()
+        navController.navigate("WeatherScreen") {
+            popUpTo("SplashScreen") { inclusive = true }
         }
     }
 
@@ -108,9 +138,5 @@ class MainActivity : ComponentActivity() {
         navController.navigate("PermissionScreen") {
             popUpTo("SplashScreen") { inclusive = true }
         }
-    }
-
-    companion object {
-        private const val PERMISSION_REQUEST_CODE = 123
     }
 }
