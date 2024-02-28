@@ -17,10 +17,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,12 +69,12 @@ private fun Preview(
     state: WeatherUiState
 ) {
     OpenWeatherTheme {
-        Content(state)
+        Content(state = state, onEvent = {})
     }
 }
 
 @Composable
-fun WeatherScreen(state: WeatherUiState) {
+fun WeatherScreen(state: WeatherUiState, onEvent: (WeatherUiEvent) -> Unit) {
     OpenWeatherTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -82,7 +84,7 @@ fun WeatherScreen(state: WeatherUiState) {
                         .fillMaxSize()
                         .padding(innerPadding),
                 ) {
-                    Content(state = state)
+                    Content(state = state, onEvent = onEvent)
                 }
             }
         )
@@ -91,7 +93,8 @@ fun WeatherScreen(state: WeatherUiState) {
 
 @Composable
 private fun Content(
-    state: WeatherUiState
+    state: WeatherUiState,
+    onEvent: (WeatherUiEvent) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -99,14 +102,21 @@ private fun Content(
     ) {
         when(state.status) {
             WeatherStatus.LOADING -> LoadingContent()
-            WeatherStatus.ERROR -> ErrorContent(state = state)
+            WeatherStatus.ERROR ->
+                ErrorContent(
+                    state = state,
+                    onEvent = onEvent,
+                )
             WeatherStatus.DONE -> WeatherContent(state = state)
         }
     }
 }
 
 @Composable
-private fun ErrorContent(state: WeatherUiState) {
+private fun ErrorContent(
+    state: WeatherUiState,
+    onEvent: (WeatherUiEvent) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -126,7 +136,7 @@ private fun ErrorContent(state: WeatherUiState) {
             fontSize = 20.sp
         )
         Spacer(modifier = Modifier.padding(vertical = 16.dp))
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { onEvent(WeatherUiEvent.TryAgain) }) {
             Text(
                 text = stringResource(id = R.string.try_again),
                 fontSize = 22.sp
@@ -136,25 +146,31 @@ private fun ErrorContent(state: WeatherUiState) {
 }
 
 @Composable
-private fun LoadingContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+fun LoadingContent(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-//        CircularProgressIndicator(
-//            modifier = Modifier.size(60.dp),
-//            color = Color.LightGray
-//        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(60.dp),
+                color = Color.LightGray
+            )
+        }
     }
 }
 
 @Composable
 private fun WeatherContent(state: WeatherUiState) {
-    state.openWeather?.let {
-        val weather = state.openWeather.current.weather.firstOrNull()
+    val openWeather = remember { state.openWeather }
+
+    openWeather?.let {
+        val weather = it.current.weather.firstOrNull()
 
         val backgroundColor = getBackgroundColor(weather)
         val colorFilter = getColorFilter(weather)
@@ -214,12 +230,12 @@ private fun WeatherContent(state: WeatherUiState) {
                         )
                     }
 
-                    Divider(
-                        color = Color.LightGray,
+                    VerticalDivider(
                         modifier = Modifier
                             .padding(start = 8.dp, end = 8.dp)
                             .width(2.dp)
                             .height(44.dp),
+                        color = Color.LightGray
                     )
                     Image(
                         painter = painterResource(id = R.drawable.ic_humidity),
@@ -239,12 +255,12 @@ private fun WeatherContent(state: WeatherUiState) {
                         )
                     }
 
-                    Divider(
-                        color = Color.LightGray,
+                    VerticalDivider(
                         modifier = Modifier
                             .padding(start = 8.dp, end = 8.dp)
                             .width(2.dp)
                             .height(44.dp),
+                        color = Color.LightGray
                     )
                     Image(
                         painter = painterResource(id = R.drawable.ic_probability_rain),

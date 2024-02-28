@@ -10,6 +10,7 @@ import com.danielvilha.models.AppSettings
 import com.danielvilha.models.OpenWeather
 import com.danielvilha.models.WeatherStatus
 import com.danielvilha.models.network.OpenWeatherApi
+import com.danielvilha.open_weather.presentation.weather.WeatherUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +55,12 @@ class MainViewModel : ViewModel() {
         }
 
         scheduleWeatherUpdates()
+    }
+
+    fun onEvent(event: WeatherUiEvent) {
+        when (event) {
+            WeatherUiEvent.TryAgain -> trackSplashScreenStarted()
+        }
     }
 
     private fun getWeather(lat: String, lon: String, appId: String) {

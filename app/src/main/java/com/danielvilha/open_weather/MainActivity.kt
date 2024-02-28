@@ -97,11 +97,15 @@ class MainActivity : ComponentActivity() {
                                 delay(1000L)
                             }
                         }
-                        WeatherScreen(state = WeatherUiState(
-                            status = viewModel.status.value ?: WeatherStatus.LOADING,
-                            throwable = viewModel.throwable.value,
-                            openWeather = viewModel.openWeather.value
-                        ))
+
+                        WeatherScreen(
+                            state = WeatherUiState(
+                                status = viewModel.status.value ?: WeatherStatus.LOADING,
+                                throwable = viewModel.throwable.value,
+                                openWeather = viewModel.openWeather.value
+                            ),
+                            onEvent = viewModel::onEvent
+                        )
                     }
                     composable(route = "PermissionScreen") {
                         PermissionScreen(
